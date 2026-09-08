@@ -1,0 +1,56 @@
+---
+strategy: polling
+no_screen_padding: 'no'
+dark_mode: 'no'
+static_data: ''
+polling_verb: get
+framework_version: 3.1.8
+serverless_language: node
+polling_url: https://mma-fightcard-api.slowtech.workers.dev/v1/cards
+polling_headers: ''
+polling_body: ''
+id: 472337
+oauth_enabled: 'false'
+oauth_pkce_enabled: 'no'
+oauth_authorize_url: ''
+oauth_token_url: ''
+oauth_scopes: ''
+oauth_scope_separator: ''
+oauth_refresh_url: ''
+oauth_auth_params: ''
+oauth_token_headers: ''
+oauth_token_site: ''
+oauth_token_params: ''
+oauth_token_request_auth_method: ''
+oauth_body_format: ''
+oauth_token_response_metadata: ''
+oauth_authorization_method: ''
+oauth_refresh_params: ''
+oauth_token_field_name: ''
+oauth_expiry_field_name: ''
+oauth_expiry_strategy: ''
+oauth_fixed_expiry_ms: ''
+custom_fields:
+- keyname: doesnt_matter
+  name: About This Plugin
+  category: sports,entertainment
+  field_type: author_bio
+  description: 'Who’s fighting next? MMA Fight Cards brings upcoming matchups, event times, and results to your TRMNL. Pick your organization, save the plugin, and keep the next fight night in view.
+
+    '
+  github_url: https://github.com/martin2097
+  learn_more_url: https://www.rapavy.cz/
+  email_address: rapavy.mato@gmail.com
+- keyname: organization_choice
+  field_type: select
+  name: Organization
+  options:
+  - UFC: ufc
+  - OKTAGON MMA: oktagon
+  - PFL: pfl
+  - KSW: ksw
+  - ONE Championship: one
+  default: ufc
+name: MMA Fight Cards | Matchups & Results
+description: UFC, PFL, Oktagon, KSW and ONE
+refresh_interval: 60
