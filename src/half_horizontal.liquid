@@ -1,0 +1,549 @@
+{% assign selected_organization_id = trmnl.plugin_settings.custom_fields_values.organization_choice | default: 'oktagon' %}
+{% assign selected_card = cards[selected_organization_id] %}
+{% if selected_card.event %}
+  {% assign organization = selected_card.organization %}
+  {% assign event = selected_card.event %}
+  {% assign main_event = selected_card.main_event %}
+  {% assign main_card = selected_card.main_card %}
+  {% assign prelims = selected_card.prelims %}
+  {% assign data_status = selected_card.data_status %}
+  {% assign has_prelims = false %}
+  {% if prelims.size > 0 %}
+    {% assign has_prelims = true %}
+  {% endif %}
+  {% assign main_count = main_card.size | plus: 1 %}
+  {% assign total_count = main_count | plus: prelims.size %}
+  <div class="layout layout--col flex--col layout--top flex--stretch-x gap--xsmall">
+    <div class="flex flex--col flex--left flex--stretch-x gap--none h--6 lg:h--8 no-shrink">
+      <div class="flex flex--row flex--left flex--center-y gap--small w--full">
+        <span class="title title--small lg:title--base grow w--0" data-clamp="1">
+          {{ event.name | escape }}
+        </span>
+        {% if data_status.stale %}
+          <span class="label label--small label--outline no-shrink">STALE</span>
+        {% endif %}
+        <span class="description lg:description--large lg:font--regular no-shrink">
+          {{ event.start_at | date: '%s' | plus: trmnl.user.utc_offset | date: '%d %b · %H:%M' }}
+        </span>
+      </div>
+    </div>
+    {% assign column_difference = main_count | minus: prelims.size | abs %}
+    {% if has_prelims and column_difference > 4 %}
+      {% assign main_card = main_card | concat: prelims %}
+      {% assign main_count = total_count %}
+      {% assign has_prelims = false %}
+    {% endif %}
+    {% assign left_count = main_count %}
+    {% assign right_count = prelims.size %}
+    {% unless has_prelims %}
+      {% assign left_count = main_count | plus: 1 | divided_by: 2 | floor %}
+      {% assign right_count = main_count | minus: left_count %}
+    {% endunless %}
+    {% assign pair_count = left_count | at_least: right_count %}
+    <div class="flex flex--col flex--stretch-x gap--none grow h--0 basis--0">
+      {% for pair_index in (1..pair_count) %}
+        <div class="grid grid--cols-2 gap--small grow w--full" data-fight-pair>
+          {% if left_count >= pair_index %}
+            {% if pair_index == 1 %}
+              {% assign fight = main_event %}
+              {% else %}
+              {% assign fight_index = pair_index | minus: 2 %}
+              {% assign fight = main_card[fight_index] %}
+            {% endif %}
+            {% assign use_large_labels = true %}
+            {% if total_count > 20 %}
+              {% assign use_large_labels = false %}
+            {% endif %}
+            {% assign red_name = fight.red.last_name | default: fight.red.name %}
+            {% assign blue_name = fight.blue.last_name | default: fight.blue.name %}
+            {% assign result_text = fight.result.method | default: fight.result.outcome | default: 'RESULT' | upcase %}
+            {% assign result_code = result_text %}
+            {% assign discipline_code = fight.discipline | replace: 'Muay Thai', 'MT' | replace: 'Kickboxing', 'KB' | replace: 'Grappling', 'GR' | default: 'MMA' %}
+            {% if fight.result.outcome == 'no_contest' or result_text contains 'NO CONTEST' %}
+              {% assign result_code = 'NC' %}
+              {% elsif fight.result.outcome == 'draw' or result_text contains 'DRAW' %}
+              {% assign result_code = 'DRAW' %}
+              {% elsif result_text contains 'DISQUAL' or result_text == 'DQ' %}
+              {% assign result_code = 'DQ' %}
+              {% elsif result_text contains 'SUB' %}
+              {% assign result_code = 'SUB' %}
+              {% elsif result_text == 'KO' or result_text == 'TKO' %}
+              {% assign result_code = result_text %}
+              {% elsif result_text contains 'KO' %}
+              {% assign result_code = 'KO/TKO' %}
+              {% elsif result_text contains 'DEC' %}
+              {% assign result_code = 'DEC' %}
+            {% endif %}
+            {% assign weight_code = fight.weight_class | replace: 'Light Heavyweight', 'LHW' | replace: 'Light heavyweight', 'LHW' | replace: 'Middleweight', 'MW' | replace: 'Welterweight', 'WW' | replace: 'Lightweight', 'LW' | replace: 'Featherweight', 'FW' | replace: 'Bantamweight', 'BW' | replace: 'Flyweight', 'FLW' | replace: 'Strawweight', 'SW' | replace: 'Atomweight', 'AW' | replace: 'Heavyweight', 'HW' | replace: 'Catchweight ', 'CW ' | replace: 'kg', '' | replace: ' Stand and Bang Rules', '' | replace: "Women's ", 'W ' | replace: ' Championship', '' | replace: ' Semifinal', '' | replace: ' Quarterfinal', '' | replace: ' Final', '' | split: '(' | first | split: '/' | first | strip %}
+            {% assign very_long_red_type = false %}
+            {% assign very_long_blue_type = false %}
+            {% assign portrait_long_red_type = false %}
+            {% assign portrait_long_blue_type = false %}
+            {% if red_name.size > 18 %}
+              {% assign very_long_red_type = true %}
+            {% endif %}
+            {% if blue_name.size > 18 %}
+              {% assign very_long_blue_type = true %}
+            {% endif %}
+            {% if red_name.size > 11 %}
+              {% assign portrait_long_red_type = true %}
+            {% endif %}
+            {% if blue_name.size > 11 %}
+              {% assign portrait_long_blue_type = true %}
+            {% endif %}
+            {% assign larger_red_type = false %}
+            {% assign larger_blue_type = false %}
+            {% assign larger_detail_type = false %}
+            {% if 14 >= total_count %}
+              {% if 9 >= red_name.size %}
+                {% assign larger_red_type = true %}
+              {% endif %}
+              {% if 9 >= blue_name.size %}
+                {% assign larger_blue_type = true %}
+              {% endif %}
+            {% endif %}
+            {% if 16 >= total_count %}
+              {% assign larger_detail_type = true %}
+            {% endif %}
+            {%- capture mma_attribute_1 -%}
+              grid grid--cols-12 lg:grid--cols-10 gap--none 
+              {% unless pair_index == left_count %}
+                border--h-5
+              {% endunless %}
+               px--1 lg:px--1 grow rounded--none 
+              {% if fight.id == main_event.id %}
+                bg--gray-75
+              {% endif %}
+            {% endcapture %}
+            <div class="{{ mma_attribute_1 }}" data-fight-id="{{ fight.id | escape }}">
+              <div class="col--span-4 lg:col--span-4 flex flex--row flex--left flex--center-y gap--xsmall w--full rounded--none">
+                {%- capture mma_attribute_2 -%}
+                  w--5 
+                  {% if fight.status == 'complete' and fight.winner_corner %}
+                    lg:w--6
+                    {% else %}
+                    lg:w--2
+                  {% endif %}
+                   no-shrink flex flex--center-x flex--center-y
+                {% endcapture %}
+                <span class="{{ mma_attribute_2 }}">
+                  {% if fight.status == 'complete' and fight.winner_corner %}
+                    {%- capture mma_attribute_3 -%}
+                      label label--small 
+                      {% if use_large_labels %}
+                        lg:label--base
+                      {% endif %}
+                       px--1 
+                      {% if fight.winner_corner == 'red' %}
+                        label--filled
+                        {% else %}
+                        label--outline
+                      {% endif %}
+                    {% endcapture %}
+                    <span class="{{ mma_attribute_3 }}" data-outcome="red">
+                      {% if fight.winner_corner == 'red' %}
+                        W
+                        {% else %}
+                        L
+                      {% endif %}
+                    </span>
+                  {% endif %}
+                </span>
+                {%- capture mma_attribute_4 -%}
+                  label label--small 
+                  {% if use_large_labels %}
+                    {% if very_long_red_type %}
+                      lg:label--small
+                      {% elsif larger_red_type %}
+                      lg:label--large lg:portrait:label--base
+                      {% else %}
+                      lg:label--base
+                    {% endif %}
+                    {% if portrait_long_red_type %}
+                      lg:portrait:label--small
+                    {% endif %}
+                  {% endif %}
+                   grow w--0 text--left 
+                  {% if fight.status != 'complete' or fight.winner_corner == 'red' %}
+                    font--bold
+                    {% else %}
+                    font--regular
+                  {% endif %}
+                {% endcapture %}
+                <span class="{{ mma_attribute_4 }}" data-fighter-name="red">
+                  {{ red_name | escape }}
+                </span>
+              </div>
+              <div class="col--span-4 lg:col--span-2 lg:px--0 px--1 w--full flex flex--center-x flex--center-y">
+                {% if fight.status == 'complete' %}
+                  {%- capture mma_attribute_5 -%}
+                    description 
+                    {% if larger_detail_type %}
+                      lg:description--large
+                    {% endif %}
+                     lg:font--regular w--full flex flex--row flex--center-x text--center
+                  {% endcapture %}
+                  <span class="{{ mma_attribute_5 }}" data-result-text data-result-centered>
+                    {{ result_code }}
+                  </span>
+                  {% else %}
+                  <span class="description lg:hidden w--full text--center" data-result-text>
+                    {% if selected_card.mixed_disciplines %}
+                      {{ discipline_code }}
+                    {% endif %}
+                    {% if fight.status == 'cancelled' %}
+                      CXL
+                      {% else %}
+                      {{ weight_code | default: 'VS' }}
+                    {% endif %}
+                  </span>
+                  {%- capture mma_attribute_6 -%}
+                    hidden lg:block description 
+                    {% if larger_detail_type %}
+                      lg:description--large
+                    {% endif %}
+                     lg:font--regular w--full text--center
+                  {% endcapture %}
+                  <span class="{{ mma_attribute_6 }}" data-result-text>
+                    {% if selected_card.mixed_disciplines %}
+                      {{ discipline_code }}
+                    {% endif %}
+                    {% if fight.status == 'cancelled' %}
+                      CXL
+                      {% else %}
+                      {{ weight_code | default: 'VS' }}
+                    {% endif %}
+                  </span>
+                {% endif %}
+              </div>
+              <div class="col--span-4 lg:col--span-4 flex flex--row flex--right flex--center-y gap--xsmall w--full rounded--none">
+                {%- capture mma_attribute_7 -%}
+                  label label--small 
+                  {% if use_large_labels %}
+                    {% if very_long_blue_type %}
+                      lg:label--small
+                      {% elsif larger_blue_type %}
+                      lg:label--large lg:portrait:label--base
+                      {% else %}
+                      lg:label--base
+                    {% endif %}
+                    {% if portrait_long_blue_type %}
+                      lg:portrait:label--small
+                    {% endif %}
+                  {% endif %}
+                   grow w--0 flex flex--row text--right flex--right 
+                  {% if fight.status != 'complete' or fight.winner_corner == 'blue' %}
+                    font--bold
+                    {% else %}
+                    font--regular
+                  {% endif %}
+                {% endcapture %}
+                <span class="{{ mma_attribute_7 }}" data-fighter-name="blue">
+                  {{ blue_name | escape }}
+                </span>
+                {%- capture mma_attribute_8 -%}
+                  w--5 
+                  {% if fight.status == 'complete' and fight.winner_corner %}
+                    lg:w--6
+                    {% else %}
+                    lg:w--2
+                  {% endif %}
+                   no-shrink flex flex--center-x flex--center-y
+                {% endcapture %}
+                <span class="{{ mma_attribute_8 }}">
+                  {% if fight.status == 'complete' and fight.winner_corner %}
+                    {%- capture mma_attribute_9 -%}
+                      label label--small 
+                      {% if use_large_labels %}
+                        lg:label--base
+                      {% endif %}
+                       px--1 
+                      {% if fight.winner_corner == 'blue' %}
+                        label--filled
+                        {% else %}
+                        label--outline
+                      {% endif %}
+                    {% endcapture %}
+                    <span class="{{ mma_attribute_9 }}" data-outcome="blue">
+                      {% if fight.winner_corner == 'blue' %}
+                        W
+                        {% else %}
+                        L
+                      {% endif %}
+                    </span>
+                  {% endif %}
+                </span>
+              </div>
+            </div>
+            {% else %}
+            <div aria-hidden="true"></div>
+          {% endif %}
+          {% if right_count >= pair_index %}
+            {% if has_prelims %}
+              {% assign fight_index = pair_index | minus: 1 %}
+              {% assign fight = prelims[fight_index] %}
+              {% else %}
+              {% assign fight_index = left_count | plus: pair_index | minus: 2 %}
+              {% assign fight = main_card[fight_index] %}
+            {% endif %}
+            {% assign use_large_labels = true %}
+            {% if total_count > 20 %}
+              {% assign use_large_labels = false %}
+            {% endif %}
+            {% assign red_name = fight.red.last_name | default: fight.red.name %}
+            {% assign blue_name = fight.blue.last_name | default: fight.blue.name %}
+            {% assign result_text = fight.result.method | default: fight.result.outcome | default: 'RESULT' | upcase %}
+            {% assign result_code = result_text %}
+            {% assign discipline_code = fight.discipline | replace: 'Muay Thai', 'MT' | replace: 'Kickboxing', 'KB' | replace: 'Grappling', 'GR' | default: 'MMA' %}
+            {% if fight.result.outcome == 'no_contest' or result_text contains 'NO CONTEST' %}
+              {% assign result_code = 'NC' %}
+              {% elsif fight.result.outcome == 'draw' or result_text contains 'DRAW' %}
+              {% assign result_code = 'DRAW' %}
+              {% elsif result_text contains 'DISQUAL' or result_text == 'DQ' %}
+              {% assign result_code = 'DQ' %}
+              {% elsif result_text contains 'SUB' %}
+              {% assign result_code = 'SUB' %}
+              {% elsif result_text == 'KO' or result_text == 'TKO' %}
+              {% assign result_code = result_text %}
+              {% elsif result_text contains 'KO' %}
+              {% assign result_code = 'KO/TKO' %}
+              {% elsif result_text contains 'DEC' %}
+              {% assign result_code = 'DEC' %}
+            {% endif %}
+            {% assign weight_code = fight.weight_class | replace: 'Light Heavyweight', 'LHW' | replace: 'Light heavyweight', 'LHW' | replace: 'Middleweight', 'MW' | replace: 'Welterweight', 'WW' | replace: 'Lightweight', 'LW' | replace: 'Featherweight', 'FW' | replace: 'Bantamweight', 'BW' | replace: 'Flyweight', 'FLW' | replace: 'Strawweight', 'SW' | replace: 'Atomweight', 'AW' | replace: 'Heavyweight', 'HW' | replace: 'Catchweight ', 'CW ' | replace: 'kg', '' | replace: ' Stand and Bang Rules', '' | replace: "Women's ", 'W ' | replace: ' Championship', '' | replace: ' Semifinal', '' | replace: ' Quarterfinal', '' | replace: ' Final', '' | split: '(' | first | split: '/' | first | strip %}
+            {% assign very_long_red_type = false %}
+            {% assign very_long_blue_type = false %}
+            {% assign portrait_long_red_type = false %}
+            {% assign portrait_long_blue_type = false %}
+            {% if red_name.size > 18 %}
+              {% assign very_long_red_type = true %}
+            {% endif %}
+            {% if blue_name.size > 18 %}
+              {% assign very_long_blue_type = true %}
+            {% endif %}
+            {% if red_name.size > 11 %}
+              {% assign portrait_long_red_type = true %}
+            {% endif %}
+            {% if blue_name.size > 11 %}
+              {% assign portrait_long_blue_type = true %}
+            {% endif %}
+            {% assign larger_red_type = false %}
+            {% assign larger_blue_type = false %}
+            {% assign larger_detail_type = false %}
+            {% if 14 >= total_count %}
+              {% if 9 >= red_name.size %}
+                {% assign larger_red_type = true %}
+              {% endif %}
+              {% if 9 >= blue_name.size %}
+                {% assign larger_blue_type = true %}
+              {% endif %}
+            {% endif %}
+            {% if 16 >= total_count %}
+              {% assign larger_detail_type = true %}
+            {% endif %}
+            {%- capture mma_attribute_10 -%}
+              grid grid--cols-12 lg:grid--cols-10 gap--none 
+              {% unless pair_index == right_count %}
+                border--h-5
+              {% endunless %}
+               px--1 lg:px--1 grow rounded--none 
+              {% if fight.id == main_event.id %}
+                bg--gray-75
+              {% endif %}
+            {% endcapture %}
+            <div class="{{ mma_attribute_10 }}" data-fight-id="{{ fight.id | escape }}">
+              <div class="col--span-4 lg:col--span-4 flex flex--row flex--left flex--center-y gap--xsmall w--full rounded--none">
+                {%- capture mma_attribute_11 -%}
+                  w--5 
+                  {% if fight.status == 'complete' and fight.winner_corner %}
+                    lg:w--6
+                    {% else %}
+                    lg:w--2
+                  {% endif %}
+                   no-shrink flex flex--center-x flex--center-y
+                {% endcapture %}
+                <span class="{{ mma_attribute_11 }}">
+                  {% if fight.status == 'complete' and fight.winner_corner %}
+                    {%- capture mma_attribute_12 -%}
+                      label label--small 
+                      {% if use_large_labels %}
+                        lg:label--base
+                      {% endif %}
+                       px--1 
+                      {% if fight.winner_corner == 'red' %}
+                        label--filled
+                        {% else %}
+                        label--outline
+                      {% endif %}
+                    {% endcapture %}
+                    <span class="{{ mma_attribute_12 }}" data-outcome="red">
+                      {% if fight.winner_corner == 'red' %}
+                        W
+                        {% else %}
+                        L
+                      {% endif %}
+                    </span>
+                  {% endif %}
+                </span>
+                {%- capture mma_attribute_13 -%}
+                  label label--small 
+                  {% if use_large_labels %}
+                    {% if very_long_red_type %}
+                      lg:label--small
+                      {% elsif larger_red_type %}
+                      lg:label--large lg:portrait:label--base
+                      {% else %}
+                      lg:label--base
+                    {% endif %}
+                    {% if portrait_long_red_type %}
+                      lg:portrait:label--small
+                    {% endif %}
+                  {% endif %}
+                   grow w--0 text--left 
+                  {% if fight.status != 'complete' or fight.winner_corner == 'red' %}
+                    font--bold
+                    {% else %}
+                    font--regular
+                  {% endif %}
+                {% endcapture %}
+                <span class="{{ mma_attribute_13 }}" data-fighter-name="red">
+                  {{ red_name | escape }}
+                </span>
+              </div>
+              <div class="col--span-4 lg:col--span-2 lg:px--0 px--1 w--full flex flex--center-x flex--center-y">
+                {% if fight.status == 'complete' %}
+                  {%- capture mma_attribute_14 -%}
+                    description 
+                    {% if larger_detail_type %}
+                      lg:description--large
+                    {% endif %}
+                     lg:font--regular w--full flex flex--row flex--center-x text--center
+                  {% endcapture %}
+                  <span class="{{ mma_attribute_14 }}" data-result-text data-result-centered>
+                    {{ result_code }}
+                  </span>
+                  {% else %}
+                  <span class="description lg:hidden w--full text--center" data-result-text>
+                    {% if selected_card.mixed_disciplines %}
+                      {{ discipline_code }}
+                    {% endif %}
+                    {% if fight.status == 'cancelled' %}
+                      CXL
+                      {% else %}
+                      {{ weight_code | default: 'VS' }}
+                    {% endif %}
+                  </span>
+                  {%- capture mma_attribute_15 -%}
+                    hidden lg:block description 
+                    {% if larger_detail_type %}
+                      lg:description--large
+                    {% endif %}
+                     lg:font--regular w--full text--center
+                  {% endcapture %}
+                  <span class="{{ mma_attribute_15 }}" data-result-text>
+                    {% if selected_card.mixed_disciplines %}
+                      {{ discipline_code }}
+                    {% endif %}
+                    {% if fight.status == 'cancelled' %}
+                      CXL
+                      {% else %}
+                      {{ weight_code | default: 'VS' }}
+                    {% endif %}
+                  </span>
+                {% endif %}
+              </div>
+              <div class="col--span-4 lg:col--span-4 flex flex--row flex--right flex--center-y gap--xsmall w--full rounded--none">
+                {%- capture mma_attribute_16 -%}
+                  label label--small 
+                  {% if use_large_labels %}
+                    {% if very_long_blue_type %}
+                      lg:label--small
+                      {% elsif larger_blue_type %}
+                      lg:label--large lg:portrait:label--base
+                      {% else %}
+                      lg:label--base
+                    {% endif %}
+                    {% if portrait_long_blue_type %}
+                      lg:portrait:label--small
+                    {% endif %}
+                  {% endif %}
+                   grow w--0 flex flex--row text--right flex--right 
+                  {% if fight.status != 'complete' or fight.winner_corner == 'blue' %}
+                    font--bold
+                    {% else %}
+                    font--regular
+                  {% endif %}
+                {% endcapture %}
+                <span class="{{ mma_attribute_16 }}" data-fighter-name="blue">
+                  {{ blue_name | escape }}
+                </span>
+                {%- capture mma_attribute_17 -%}
+                  w--5 
+                  {% if fight.status == 'complete' and fight.winner_corner %}
+                    lg:w--6
+                    {% else %}
+                    lg:w--2
+                  {% endif %}
+                   no-shrink flex flex--center-x flex--center-y
+                {% endcapture %}
+                <span class="{{ mma_attribute_17 }}">
+                  {% if fight.status == 'complete' and fight.winner_corner %}
+                    {%- capture mma_attribute_18 -%}
+                      label label--small 
+                      {% if use_large_labels %}
+                        lg:label--base
+                      {% endif %}
+                       px--1 
+                      {% if fight.winner_corner == 'blue' %}
+                        label--filled
+                        {% else %}
+                        label--outline
+                      {% endif %}
+                    {% endcapture %}
+                    <span class="{{ mma_attribute_18 }}" data-outcome="blue">
+                      {% if fight.winner_corner == 'blue' %}
+                        W
+                        {% else %}
+                        L
+                      {% endif %}
+                    </span>
+                  {% endif %}
+                </span>
+              </div>
+            </div>
+            {% else %}
+            <div aria-hidden="true"></div>
+          {% endif %}
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% case organization.id %}
+    {% when 'ufc' %}
+    {% assign organization_logo = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzNDEgMTE5IiBmaWxsPSJibGFjayI+PHBhdGggZD0iTTg5LjkuN2gzOS43cy0yNi40IDk0LjMtMjcuNyA5OS40Yy0yLjUgOS44LTUgMTguNy0yOSAxOC43LTI4LjkgMC00NS43LS4xLTUzLjYgMC05LjkuMS0yMS42LTktMTguNC0yMC44TDI4IC43aDQwLjVTNDUuOCA4MS44IDQ1LjMgODMuOWMtLjQgMi4xLTIuNyA3LjkgOS45IDggOS4xLjIgOS44LTIuMiAxMS40LThDNzAuNCA3MC44IDg5LjkuNyA4OS45Ljd6bTE0NS44IDBsLTcuMiAyNS45aC04Ni40TDE0OS4zLjdoODYuNHpNMTE2LjQgMTE4LjhsMjAuNy03NC41aDg2LjRsLTcuMiAyNS45SDE3MGwtMTMuNSA0OC42aC00MC4xem0xNjIuOC03Ni41Yy0zLjcgMTMuNi03IDI1LjItMTAuNyAzOC45LS43IDIuNC0yLjMgNS45LTEuOCA4LjEgMS4xIDUuMiAxOC4zIDMuMiAyNC41IDMuMmgyNy42Yy0yLjIgOC43LTQuNyAxNy4yLTcuMSAyNS43SDI0NmMtOS42LS45LTIyLjEtNS0yMC45LTE3LjQuNC0zLjkgMi4yLTguMyAzLjQtMTIuNiA1LjktMjEuMSAxMS45LTQyLjcgMTcuNi02My40IDIuNS05LjIgNC41LTE3IDExLjgtMjAuNyA0LjctMi40IDEyLjItMy4xIDE3LjgtMy40SDM0MWMtMi4zIDguNi00LjcgMTcuMi03LjEgMjUuN2gtMzcuNWMtNC41IDAtOS41LS41LTEyIDEuMi0yLjcgMi00LjIgMTEtNS4yIDE0Ljd6Ii8+PC9zdmc+' %}
+    {% when 'oktagon' %}
+    {% assign organization_logo = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAEkklEQVR4AcSWWyxlVxjH/2sfh5locQbRpq2ouLQR1SLCA4mMGFGaRuMSPGDogwQhInEJEvGAB4ngoTpF3CU0mlRMoy7xQNwqHdLGNEjTaiTModXMcOacNedbHONwzj7bzMPs+K9tfevb6/9bVyS84UcRAN94/w5/5HGf/+qRp0iPPHL4ssZZydhsAvDf3nPlz09/5px/y8G/USTOH3C1/U/aX7xcbEHIAgjzU90kGD7FTR/Gw5ylpw9tQVgFeC1zE6wCCIsAVs1VThy3AiEr1Vvc5C/eNiCuAVg1V7/Dmc9DznyNKyIjeP8I2LkqhpAE5Xkha+79Pf/n4LaUlpaG+Ph4i8rMzMT+f64MH45CKYR07g2l5vPz89jY2LCoubk5pKen3whCAIhzbmm307RfGvnOzo6J1+p7c3MTjY2NYLc+kp2JJ+f3hACAXvfVtaP2CuZubm5oampCQ0ODAJSD0Diov6AkAWAAF28KCKmcObvByO3s7JCTk4Pp6WmkpKRAkl52Z4JgV0+H4SzpZaZwPi8c/PSw95aKiopwddoZY6iqqkJycrJIjoiIwPj4OGpqauDk5CRiVBwfH2NsbAwtLS1iObj6A/OTQUlGWQYwNtDP4eEhvS6kUqnE+ubl5cHT0xNtbW0YGBiAv7+/yDk6OsLIyAhyc3MRHByMwsJCTE1NiTZrhSzA5Y8cHBzQ3t4uppji1HlCQgIIcmhoCFlZWQgJCUFJSQkmJycREBCAmJgYSpWVIgBHR0d0dnYiLi5OdLa/v4++vj5kZGQgNDQUZWVlmJ2dFaOura0FHdW6ujqsra2JfLnCJoBGo0F/fz98fHzQ3d2N1NRUhIWFoaKiAgsLCwgPD0d9fT0WFxcxPDyM7OxsbG9vizwClTOnNpsAQUFBoNGQUXV1NVZXVxEVFSX2wvLyspgJugHd3d2pP0xMTIjloE0oAjYKmwAzMzNYX18X69nc3IyVlRV0dXWJEbq4uGB0dFTsDfKhDZmfn4+TkxOqKpIsQGxsLFpbW8WoOzo6kJSUdHHU6Dqmo1hcXIzd3V2RV15eDr1eb2ZMkGaBKxXpSv2sevJYhdMtQ2lpKRITE0Gb8KwB0Gq14h6g+NLSkgj39PSIG9D4X5OomwpfX9+z+LPfOXR/MlP88lsASGCGy0HoDxnf+pIRhCluMBjQ29uL6OhokOHVkZryTG8ypyVxe/uAYzsJ0P9vDiAZOzQmS0YBKvUIOMzPjG7PDKKgoACVlZViBmDjuWb+/ICZfcLZovZE9wPFBAAL+OsJs1fHyEHQ9evl5UXfyMrPz0/cjhcjt2B+ZLh9706o9og6EgD0C/v47wM5iHddnxoGBwdBdz/dcpYUGRkp7gxb5prPdg7Jk3QBQBWlEPTHx5Joj9zEnDzNACggC/HHPcYf34WcsPU5YGXaL4+cvEjXAChoFUL/L8OzdchKf3xtw9GaWzInL4sA1GAVghqVyrjb5cypG6sA1PhaEArMyUMWgBIEhJ39XcZYLgP7WpEYu890p7HWpp36NckmACWKeyJw7wH7ZK9DkQL3vmPn55y+l9MLAAAA//8eVkuoAAAABklEQVQDAJIZ2V8Z8uiNAAAAAElFTkSuQmCC' %}
+    {% when 'pfl' %}
+    {% assign organization_logo = 'data:image/svg+xml;base64,PHN2ZyBpZD0icGZsLWxvZ28iICB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMTgwLjYyIDQ4Ni44NCI+CiAgICA8ZGVmcz4KICAgICAgICAKICAgIDwvZGVmcz4KICAgIDxnIGlkPSJQRkxfcmVnX3NlYXNvbiI+CiAgICAgICAgPGcgaWQ9IlBGTF90ZXh0Ij4KICAgICAgICAgICAgPHBhdGggZD0ibTE0Ny45IDMyNy4xMSA2Ny43OSA2Ny4yN2gxMDYuOTNjNDQuNzIgMCA4MC45Ny0zNi4yNSA4MC45Ny04MC45N3MtMzYuMjUtODAuOTctODAuOTctODAuOTdINTkuNTd2MjE1LjYzaDg4LjMyVjI5OS43NGgxNjAuNzdjNy41NiAwIDEzLjY4IDYuMTMgMTMuNjggMTMuNjhzLTYuMTMgMTMuNjgtMTMuNjggMTMuNjhIMTQ3Ljg5TTUyMC45NyAyOTkuNzJoMjU1LjY5di02Ny4yOEg0MzIuNjV2MjE1LjYzaDg4LjMyVjI5OS43MnoiIC8+CiAgICAgICAgICAgIDxwYXRoIGQ9Im01MjAuOTcgMzI3LjEgNjcuNzkgNjcuMjZ2LjAxaDE4Ny45VjMyNy4xSDUyMC45N3oiIC8+CiAgICAgICAgICAgIDxwYXRoIGlkPSJMIiBkPSJtODExLjQgMzgwLjc1IDY3Ljc5IDY3LjI3aDI2NC40N3YtNjcuMjhIODk5LjczVjIzMi40OUg4MTEuNHYxNDguMjZ6IiAvPgogICAgICAgIDwvZz4KICAgICAgICA8cGF0aCBpZD0iY3Jvd24iIHN0eWxlPSJmaWxsOiMyOTM1N2MiIGQ9Ik00ODYuMTEgMTk3Ljg3IDQzMC45MiA4NC45NGw4MC4wNyAzMi41MmMtLjM4IDIuMS0uNjEgNC4yNi0uNjEgNi40NyAwIDE5LjkgMTYuMTMgMzYuMDMgMzYuMDMgMzYuMDNzMzYuMDMtMTYuMTMgMzYuMDMtMzYuMDNjMC0xNy45NS0xMy4xNC0zMi43OS0zMC4zMi0zNS41M2w1Mi41My01Mi41MyA1Mi41MyA1Mi41M2MtMTcuMTggMi43NC0zMC4zMiAxNy41OC0zMC4zMiAzNS41MyAwIDE5LjkgMTYuMTMgMzYuMDMgMzYuMDMgMzYuMDNzMzYuMDMtMTYuMTMgMzYuMDMtMzYuMDNjMC0yLjIxLS4yMy00LjM3LS42MS02LjQ3bDgwLjA3LTMyLjUyLTU1LjE4IDExMi45M0g0ODYuMTNaIiAvPgogICAgPC9nPgo8L3N2Zz4=' %}
+    {% when 'ksw' %}
+    {% assign organization_logo = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAIAAACQkWg2AAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAATZJREFUeNpi/M7PQBJg+fufRA1/GGhsA8MLHob///9/ri3/vm7V3/fv3kcE/Dp3BigC5P65fxci+zE37UtfB1AWyGWCOIlRUYkjMPRLXydPey+Q+yEvncXQmFlBidHQGMhlNjRmMTD+ff4sUDHTH7CTOAND/314/3HeLCYBQaDAz/v33tdWAMU5AkJBGoA6BQR/378HUnybC2QpEPy6dxfIfh4TCuG+qSkHkj/OnQG6BIJe5qQBFTBcA2sAqgaSD71dgNzb2kpf9u3+8/4dROf7uTMhjHvWxkBZqJM+rFv998N7/qQ0waJyTgcXoMP+vn///fxZoNT7dashwfP9HthJZzlANjypLn89B2TSzwf3geTXc2euWxq/W7sKyAYqAHJ/3LsLZAAR40l2Wsf07/+DLfEBBBgAaQDNq2r5JwQAAAAASUVORK5CYII=' %}
+    {% when 'one' %}
+    {% assign organization_logo = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGZpbGw9ImJsYWNrIiB3aWR0aD0iNzMyIiBoZWlnaHQ9IjM4MCIgdmlld0JveD0iMCAwIDczMiAzODAiPgogICAgPHBhdGggZD0iTTMxNy40LDhsNjcuNCwyMDYuNGw0Ni43LTEzNS41aDUyLjlsLTk5LjgsMjkzLjRsLTY3LjItMTk5LjdsLTQzLjYsMTI4LjRoLTU3LjFMMzE3LjQsOHogTTE4OSwyNzAuOQogICAgICAgIGMtNC40LDUuNi05LjMsMTAuNi0xNC45LDE1Yy01LjUsNC40LTExLjYsOC0xOC4xLDEwLjhjLTYuNSwyLjgtMTMuMSw0LjItMTkuNyw0LjJIMzcuN2MtNi4xLDAtMTEuNS0xLTE2LjItMi45CiAgICAgICAgYy00LjctMS45LTguNS00LjYtMTEuNC04Yy0yLjktMy40LTQuNi03LjQtNS4yLTEyLjFjLTAuNi00LjYsMC4zLTkuOCwyLjYtMTUuNGw1MS44LTE0Ny4xYzIuNS02LjEsNi4zLTExLjUsMTEuNS0xNi4zCiAgICAgICAgQzc2LDk0LjMsODEuNyw5MC4zLDg4LDg2LjhjNi4yLTMuNCwxMi44LTYsMTkuNi03LjljNi44LTEuOCwxMy4xLTIuNywxOC45LTIuN2g5Mi4yYzYuMywwLDExLjksMSwxNi41LDMuMWM0LjcsMi4xLDguMyw0LjksMTEsOC42CiAgICAgICAgYzIuNiwzLjcsNC4yLDcuOSw0LjcsMTIuOGMwLjUsNC45LTAuNCwxMC4xLTIuOCwxNS43bC00OC45LDEzNy4yQzE5Ni44LDI1OS42LDE5My40LDI2NS4zLDE4OSwyNzAuOXogTTE4Ny40LDExOC45aC02OS43CiAgICAgICAgTDY3LjMsMjYyLjdoNjlMMTg3LjQsMTE4Ljl6IE01MTcuOSw3OC45aDIwOS4zTDcxMiwxMjMuOEg1NjMuMkw1NDkuOCwxNjNsMTA3LjgtMC4xbC0xNi45LDQ5SDUzMi45bC0xMC44LDMxLjZsMTQ4LjUtMC4xbC0xOS42LDU3CiAgICAgICAgSDQ0Mi4xTDUxNy45LDc4Ljl6Ii8+Cjwvc3ZnPg==' %}
+  {% endcase %}
+  <div class="title_bar">
+    <img class="image image--contain w--10 h--6" src="{{ organization_logo }}" alt>
+    <span class="title">
+      {{ organization.name }}
+    </span>
+  </div>
+  {% else %}
+  <div class="layout layout--col">
+    <span class="title title--small">
+      {{ selected_organization_id | upcase }}
+    </span>
+    <span class="description">Fight card temporarily unavailable</span>
+  </div>
+  <div class="title_bar">
+    <span class="title">MMA FIGHTCARD</span>
+  </div>
+{% endif %}
