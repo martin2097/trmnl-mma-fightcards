@@ -195,7 +195,7 @@
               {% endunless %}
                px--1 lg:px--2 grow rounded--none 
               {% if fight.id == main_event.id %}
-                bg--gray-75
+                bg--gray-75 2bit:bg--gray-55
               {% endif %}
             {% endcapture %}
             <div class="{{ mma_attribute_1 }}" data-fight-id="{{ fight.id | escape }}">
@@ -455,7 +455,7 @@
                   {% endunless %}
                    px--1 lg:px--2 grow rounded--none 
                   {% if fight.id == main_event.id %}
-                    bg--gray-75
+                    bg--gray-75 2bit:bg--gray-55
                   {% endif %}
                 {% endcapture %}
                 <div class="{{ mma_attribute_11 }}" data-fight-id="{{ fight.id | escape }}">
@@ -719,7 +719,7 @@
                   {% endunless %}
                    px--1 lg:px--2 grow rounded--none 
                   {% if fight.id == main_event.id %}
-                    bg--gray-75
+                    bg--gray-75 2bit:bg--gray-55
                   {% endif %}
                 {% endcapture %}
                 <div class="{{ mma_attribute_21 }}" data-fight-id="{{ fight.id | escape }}">
@@ -947,7 +947,7 @@
             </span>
           </div>
         </div>
-        <div class="grid grid--cols-12 gap--small h--[29cqh] lg:portrait:h--[18cqh] no-shrink bg--gray-75 rounded--large rounded--none" data-fight-id="{{ main_event.id | escape }}">
+        <div class="grid grid--cols-12 gap--small h--[29cqh] lg:portrait:h--[18cqh] no-shrink bg--gray-75  2bit:bg--gray-55 rounded--large rounded--none" data-fight-id="{{ main_event.id | escape }}">
           <div class="col--span-2 h--full flex flex--center-x {{ hero_red_frame_y }} rounded--none">
             {% if hero_red_image %}
               <img class="image image-dither {{ hero_red_fit }}" onerror="{{ fighter_image_onerror | escape }}" src="{{ hero_red_image }}" alt="{{ main_event.red.name }}">
