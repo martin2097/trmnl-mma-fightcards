@@ -129,6 +129,10 @@
         <div class="grid grid--cols-2 gap--small grow h--0 basis--0 w--full">
           <div class="flex flex--col flex--stretch-x gap--none h--full">
             {% assign fight = main_event %}
+            {% assign main_event_text_contrast = '' %}
+            {% if fight.id == main_event.id %}
+              {% assign main_event_text_contrast = '1bit:text-stroke' %}
+            {% endif %}
             {% assign use_large_labels = true %}
             {% if total_count > 20 %}
               {% assign use_large_labels = false %}
@@ -216,7 +220,7 @@
                       {% if fight.winner_corner == 'red' %}
                         label--filled
                         {% else %}
-                        label--outline
+                        label--outline bg--white
                       {% endif %}
                     {% endcapture %}
                     <span class="{{ mma_attribute_3 }}" data-outcome="red">
@@ -230,6 +234,7 @@
                 </span>
                 {%- capture mma_attribute_4 -%}
                   label label--small 
+                  {{ main_event_text_contrast }}
                   {% if use_large_labels %}
                     {% if very_long_red_type %}
                       lg:label--small
@@ -258,6 +263,7 @@
                   <div class="grid grid--cols-12 gap--xsmall w--full lg:portrait:grid--cols-1 lg:portrait:gap--none">
                     {%- capture mma_attribute_5 -%}
                       col--span-5 lg:portrait:col--span-1 description 
+                      {{ main_event_text_contrast }}
                       {% if larger_detail_type %}
                         lg:description--large
                       {% endif %}
@@ -277,6 +283,7 @@
                     </span>
                     {%- capture mma_attribute_6 -%}
                       col--span-7 lg:portrait:col--span-1 description 
+                      {{ main_event_text_contrast }}
                       {% if larger_detail_type %}
                         lg:description--large
                       {% endif %}
@@ -290,7 +297,7 @@
                     </span>
                   </div>
                   {% else %}
-                  <span class="description lg:hidden w--full text--center" data-result-text>
+                  <span class="{{ main_event_text_contrast }} description lg:hidden w--full text--center" data-result-text>
                     {% if selected_card.mixed_disciplines %}
                       {{ discipline_code }}
                     {% endif %}
@@ -302,6 +309,7 @@
                   </span>
                   {%- capture mma_attribute_7 -%}
                     hidden lg:block description 
+                    {{ main_event_text_contrast }}
                     {% if larger_detail_type %}
                       lg:description--large
                     {% endif %}
@@ -322,6 +330,7 @@
               <div class="col--span-4 flex flex--row flex--right flex--center-y gap--xsmall w--full rounded--none">
                 {%- capture mma_attribute_8 -%}
                   label label--small 
+                  {{ main_event_text_contrast }}
                   {% if use_large_labels %}
                     {% if very_long_blue_type %}
                       lg:label--small
@@ -364,7 +373,7 @@
                       {% if fight.winner_corner == 'blue' %}
                         label--filled
                         {% else %}
-                        label--outline
+                        label--outline bg--white
                       {% endif %}
                     {% endcapture %}
                     <span class="{{ mma_attribute_10 }}" data-outcome="blue">
@@ -380,6 +389,10 @@
             </div>
             {% for fight in main_card %}
               {% if split_at > forloop.index %}
+                {% assign main_event_text_contrast = '' %}
+                {% if fight.id == main_event.id %}
+                  {% assign main_event_text_contrast = '1bit:text-stroke' %}
+                {% endif %}
                 {% assign use_large_labels = true %}
                 {% if total_count > 20 %}
                   {% assign use_large_labels = false %}
@@ -467,7 +480,7 @@
                           {% if fight.winner_corner == 'red' %}
                             label--filled
                             {% else %}
-                            label--outline
+                            label--outline bg--white
                           {% endif %}
                         {% endcapture %}
                         <span class="{{ mma_attribute_13 }}" data-outcome="red">
@@ -481,6 +494,7 @@
                     </span>
                     {%- capture mma_attribute_14 -%}
                       label label--small 
+                      {{ main_event_text_contrast }}
                       {% if use_large_labels %}
                         {% if very_long_red_type %}
                           lg:label--small
@@ -509,6 +523,7 @@
                       <div class="grid grid--cols-12 gap--xsmall w--full lg:portrait:grid--cols-1 lg:portrait:gap--none">
                         {%- capture mma_attribute_15 -%}
                           col--span-5 lg:portrait:col--span-1 description 
+                          {{ main_event_text_contrast }}
                           {% if larger_detail_type %}
                             lg:description--large
                           {% endif %}
@@ -528,6 +543,7 @@
                         </span>
                         {%- capture mma_attribute_16 -%}
                           col--span-7 lg:portrait:col--span-1 description 
+                          {{ main_event_text_contrast }}
                           {% if larger_detail_type %}
                             lg:description--large
                           {% endif %}
@@ -541,7 +557,7 @@
                         </span>
                       </div>
                       {% else %}
-                      <span class="description lg:hidden w--full text--center" data-result-text>
+                      <span class="{{ main_event_text_contrast }} description lg:hidden w--full text--center" data-result-text>
                         {% if selected_card.mixed_disciplines %}
                           {{ discipline_code }}
                         {% endif %}
@@ -553,6 +569,7 @@
                       </span>
                       {%- capture mma_attribute_17 -%}
                         hidden lg:block description 
+                        {{ main_event_text_contrast }}
                         {% if larger_detail_type %}
                           lg:description--large
                         {% endif %}
@@ -573,6 +590,7 @@
                   <div class="col--span-4 flex flex--row flex--right flex--center-y gap--xsmall w--full rounded--none">
                     {%- capture mma_attribute_18 -%}
                       label label--small 
+                      {{ main_event_text_contrast }}
                       {% if use_large_labels %}
                         {% if very_long_blue_type %}
                           lg:label--small
@@ -615,7 +633,7 @@
                           {% if fight.winner_corner == 'blue' %}
                             label--filled
                             {% else %}
-                            label--outline
+                            label--outline bg--white
                           {% endif %}
                         {% endcapture %}
                         <span class="{{ mma_attribute_20 }}" data-outcome="blue">
@@ -635,6 +653,10 @@
           <div class="flex flex--col flex--stretch-x gap--none h--full">
             {% for fight in main_card %}
               {% if forloop.index >= split_at %}
+                {% assign main_event_text_contrast = '' %}
+                {% if fight.id == main_event.id %}
+                  {% assign main_event_text_contrast = '1bit:text-stroke' %}
+                {% endif %}
                 {% assign use_large_labels = true %}
                 {% if total_count > 20 %}
                   {% assign use_large_labels = false %}
@@ -722,7 +744,7 @@
                           {% if fight.winner_corner == 'red' %}
                             label--filled
                             {% else %}
-                            label--outline
+                            label--outline bg--white
                           {% endif %}
                         {% endcapture %}
                         <span class="{{ mma_attribute_23 }}" data-outcome="red">
@@ -736,6 +758,7 @@
                     </span>
                     {%- capture mma_attribute_24 -%}
                       label label--small 
+                      {{ main_event_text_contrast }}
                       {% if use_large_labels %}
                         {% if very_long_red_type %}
                           lg:label--small
@@ -764,6 +787,7 @@
                       <div class="grid grid--cols-12 gap--xsmall w--full lg:portrait:grid--cols-1 lg:portrait:gap--none">
                         {%- capture mma_attribute_25 -%}
                           col--span-5 lg:portrait:col--span-1 description 
+                          {{ main_event_text_contrast }}
                           {% if larger_detail_type %}
                             lg:description--large
                           {% endif %}
@@ -783,6 +807,7 @@
                         </span>
                         {%- capture mma_attribute_26 -%}
                           col--span-7 lg:portrait:col--span-1 description 
+                          {{ main_event_text_contrast }}
                           {% if larger_detail_type %}
                             lg:description--large
                           {% endif %}
@@ -796,7 +821,7 @@
                         </span>
                       </div>
                       {% else %}
-                      <span class="description lg:hidden w--full text--center" data-result-text>
+                      <span class="{{ main_event_text_contrast }} description lg:hidden w--full text--center" data-result-text>
                         {% if selected_card.mixed_disciplines %}
                           {{ discipline_code }}
                         {% endif %}
@@ -808,6 +833,7 @@
                       </span>
                       {%- capture mma_attribute_27 -%}
                         hidden lg:block description 
+                        {{ main_event_text_contrast }}
                         {% if larger_detail_type %}
                           lg:description--large
                         {% endif %}
@@ -828,6 +854,7 @@
                   <div class="col--span-4 flex flex--row flex--right flex--center-y gap--xsmall w--full rounded--none">
                     {%- capture mma_attribute_28 -%}
                       label label--small 
+                      {{ main_event_text_contrast }}
                       {% if use_large_labels %}
                         {% if very_long_blue_type %}
                           lg:label--small
@@ -870,7 +897,7 @@
                           {% if fight.winner_corner == 'blue' %}
                             label--filled
                             {% else %}
-                            label--outline
+                            label--outline bg--white
                           {% endif %}
                         {% endcapture %}
                         <span class="{{ mma_attribute_30 }}" data-outcome="blue">
@@ -935,7 +962,7 @@
                     {% if main_event.winner_corner == 'red' %}
                       label--filled
                       {% else %}
-                      label--outline
+                      label--outline bg--white
                     {% endif %}
                   {% endcapture %}
                   <span class="{{ mma_attribute_16 }}">
@@ -962,7 +989,7 @@
                 font--regular
               {% endif %}
             {% endcapture %}
-            <span class="{{ mma_attribute_17 }}" data-main-event-name="red">
+            <span class="1bit:text-stroke {{ mma_attribute_17 }}" data-main-event-name="red">
               {{ main_event.red.name | escape }}
             </span>
             <div class="flex flex--row flex--center-x gap--small w--full">
@@ -972,7 +999,7 @@
                 </span>
               {% endif %}
               {% if main_event.red.record %}
-                <span class="label label--small lg:label--base label--gray 1bit:text--black text--center">
+                <span class="1bit:text-stroke label label--small lg:label--base label--gray 1bit:text--black text--center">
                   {{ main_event.red.record }}
                 </span>
               {% endif %}
@@ -981,7 +1008,7 @@
           <div class="col--span-2 h--full flex flex--col flex--center-x flex--center-y gap--xsmall rounded--none">
             {% if main_event.status == 'complete' %}
               {% if main_event.weight_class %}
-                <span class="label label--small lg:label--base label--gray 1bit:text--black text--center">
+                <span class="1bit:text-stroke label label--small lg:label--base label--gray 1bit:text--black text--center">
                   {{ main_event.weight_class }}
                   {% if selected_card.mixed_disciplines %}
                      · 
@@ -989,10 +1016,10 @@
                   {% endif %}
                 </span>
               {% endif %}
-              <span class="label label--small lg:label--large font--bold text--center">
+              <span class="1bit:text-stroke label label--small lg:label--large font--bold text--center">
                 {{ main_event.result.method | default: main_event.result.outcome | replace: '_', ' ' | escape }}
               </span>
-              <span class="value value--xsmall value--tnums text--center" data-fit-value="true">
+              <span class="1bit:text-stroke value value--xsmall value--tnums text--center" data-fit-value="true">
                 {% if main_event.result.round %}
                   R
                   {{ main_event.result.round }}
@@ -1005,7 +1032,7 @@
               {% elsif main_event.status == 'cancelled' %}
               <span class="label label--outline">CXL</span>
               {% if main_event.weight_class %}
-                <span class="label label--small lg:label--base label--gray 1bit:text--black text--center">
+                <span class="1bit:text-stroke label label--small lg:label--base label--gray 1bit:text--black text--center">
                   {{ main_event.weight_class }}
                   {% if selected_card.mixed_disciplines %}
                      · 
@@ -1014,9 +1041,9 @@
                 </span>
               {% endif %}
               {% else %}
-              <span class="label label--small lg:label--large font--bold text--center">VS</span>
+              <span class="1bit:text-stroke label label--small lg:label--large font--bold text--center">VS</span>
               {% if main_event.weight_class %}
-                <span class="label label--small lg:label--base label--gray 1bit:text--black text--center">
+                <span class="1bit:text-stroke label label--small lg:label--base label--gray 1bit:text--black text--center">
                   {{ main_event.weight_class }}
                   {% if selected_card.mixed_disciplines %}
                      · 
@@ -1035,7 +1062,7 @@
                     {% if main_event.winner_corner == 'blue' %}
                       label--filled
                       {% else %}
-                      label--outline
+                      label--outline bg--white
                     {% endif %}
                   {% endcapture %}
                   <span class="{{ mma_attribute_18 }}">
@@ -1062,7 +1089,7 @@
                 font--regular
               {% endif %}
             {% endcapture %}
-            <span class="{{ mma_attribute_19 }}" data-main-event-name="blue">
+            <span class="1bit:text-stroke {{ mma_attribute_19 }}" data-main-event-name="blue">
               {{ main_event.blue.name | escape }}
             </span>
             <div class="flex flex--row flex--center-x gap--small w--full">
@@ -1072,7 +1099,7 @@
                 </span>
               {% endif %}
               {% if main_event.blue.record %}
-                <span class="label label--small lg:label--base label--gray 1bit:text--black text--center">
+                <span class="1bit:text-stroke label label--small lg:label--base label--gray 1bit:text--black text--center">
                   {{ main_event.blue.record }}
                 </span>
               {% endif %}

@@ -50,6 +50,10 @@
               {% assign fight_index = pair_index | minus: 2 %}
               {% assign fight = main_card[fight_index] %}
             {% endif %}
+            {% assign main_event_text_contrast = '' %}
+            {% if fight.id == main_event.id %}
+              {% assign main_event_text_contrast = '1bit:text-stroke' %}
+            {% endif %}
             {% assign use_large_labels = true %}
             {% if total_count > 20 %}
               {% assign use_large_labels = false %}
@@ -137,7 +141,7 @@
                       {% if fight.winner_corner == 'red' %}
                         label--filled
                         {% else %}
-                        label--outline
+                        label--outline bg--white
                       {% endif %}
                     {% endcapture %}
                     <span class="{{ mma_attribute_3 }}" data-outcome="red">
@@ -151,6 +155,7 @@
                 </span>
                 {%- capture mma_attribute_4 -%}
                   label label--small 
+                  {{ main_event_text_contrast }}
                   {% if use_large_labels %}
                     {% if very_long_red_type %}
                       lg:label--small
@@ -178,6 +183,7 @@
                 {% if fight.status == 'complete' %}
                   {%- capture mma_attribute_5 -%}
                     description 
+                    {{ main_event_text_contrast }}
                     {% if larger_detail_type %}
                       lg:description--large
                     {% endif %}
@@ -187,7 +193,7 @@
                     {{ result_code }}
                   </span>
                   {% else %}
-                  <span class="description lg:hidden w--full text--center" data-result-text>
+                  <span class="{{ main_event_text_contrast }} description lg:hidden w--full text--center" data-result-text>
                     {% if selected_card.mixed_disciplines %}
                       {{ discipline_code }}
                     {% endif %}
@@ -199,6 +205,7 @@
                   </span>
                   {%- capture mma_attribute_6 -%}
                     hidden lg:block description 
+                    {{ main_event_text_contrast }}
                     {% if larger_detail_type %}
                       lg:description--large
                     {% endif %}
@@ -219,6 +226,7 @@
               <div class="col--span-4 lg:col--span-4 flex flex--row flex--right flex--center-y gap--xsmall w--full rounded--none">
                 {%- capture mma_attribute_7 -%}
                   label label--small 
+                  {{ main_event_text_contrast }}
                   {% if use_large_labels %}
                     {% if very_long_blue_type %}
                       lg:label--small
@@ -261,7 +269,7 @@
                       {% if fight.winner_corner == 'blue' %}
                         label--filled
                         {% else %}
-                        label--outline
+                        label--outline bg--white
                       {% endif %}
                     {% endcapture %}
                     <span class="{{ mma_attribute_9 }}" data-outcome="blue">
@@ -285,6 +293,10 @@
               {% else %}
               {% assign fight_index = left_count | plus: pair_index | minus: 2 %}
               {% assign fight = main_card[fight_index] %}
+            {% endif %}
+            {% assign main_event_text_contrast = '' %}
+            {% if fight.id == main_event.id %}
+              {% assign main_event_text_contrast = '1bit:text-stroke' %}
             {% endif %}
             {% assign use_large_labels = true %}
             {% if total_count > 20 %}
@@ -373,7 +385,7 @@
                       {% if fight.winner_corner == 'red' %}
                         label--filled
                         {% else %}
-                        label--outline
+                        label--outline bg--white
                       {% endif %}
                     {% endcapture %}
                     <span class="{{ mma_attribute_12 }}" data-outcome="red">
@@ -387,6 +399,7 @@
                 </span>
                 {%- capture mma_attribute_13 -%}
                   label label--small 
+                  {{ main_event_text_contrast }}
                   {% if use_large_labels %}
                     {% if very_long_red_type %}
                       lg:label--small
@@ -414,6 +427,7 @@
                 {% if fight.status == 'complete' %}
                   {%- capture mma_attribute_14 -%}
                     description 
+                    {{ main_event_text_contrast }}
                     {% if larger_detail_type %}
                       lg:description--large
                     {% endif %}
@@ -423,7 +437,7 @@
                     {{ result_code }}
                   </span>
                   {% else %}
-                  <span class="description lg:hidden w--full text--center" data-result-text>
+                  <span class="{{ main_event_text_contrast }} description lg:hidden w--full text--center" data-result-text>
                     {% if selected_card.mixed_disciplines %}
                       {{ discipline_code }}
                     {% endif %}
@@ -435,6 +449,7 @@
                   </span>
                   {%- capture mma_attribute_15 -%}
                     hidden lg:block description 
+                    {{ main_event_text_contrast }}
                     {% if larger_detail_type %}
                       lg:description--large
                     {% endif %}
@@ -455,6 +470,7 @@
               <div class="col--span-4 lg:col--span-4 flex flex--row flex--right flex--center-y gap--xsmall w--full rounded--none">
                 {%- capture mma_attribute_16 -%}
                   label label--small 
+                  {{ main_event_text_contrast }}
                   {% if use_large_labels %}
                     {% if very_long_blue_type %}
                       lg:label--small
@@ -497,7 +513,7 @@
                       {% if fight.winner_corner == 'blue' %}
                         label--filled
                         {% else %}
-                        label--outline
+                        label--outline bg--white
                       {% endif %}
                     {% endcapture %}
                     <span class="{{ mma_attribute_18 }}" data-outcome="blue">
